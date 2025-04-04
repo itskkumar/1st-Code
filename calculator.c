@@ -1,12 +1,15 @@
 //Code for Calculator...
 #include<stdio.h>
 #include<math.h>
+#define MAX 10
 void sum();
 void mul();
 void sub();
 void fact();
 void Multiply();
 void table();
+void printMatrix(double matrix[MAX][MAX], int row, int col);
+int rankOfMatrix(double matrix[MAX][MAX], int row, int col);
 int main()
 {
     int a,b,c,d,e,n,p,t,i,j,A[3][3],B[3][3],M[3][3]={{0,0,0},{0,0,0},{0,0,0}};
@@ -30,6 +33,7 @@ int main()
     printf("Enter 4 for factorial:\n");
     printf("Enter 5 for Multiplication of 2 Matrix:\n");
     printf("Enter 6 for print Table:\n");
+    printf("Enter 7 for find the rank of matrix:\n");
     printf("Enter 1 if you read already\n");
     printf("Enter 2 if you not read\n");
     scanf("%d",&e);
@@ -94,6 +98,34 @@ int main()
         printf("Table of %d is:\n",n);
         table(n);
      }
+     else if(d==7)
+     {
+        double matrix[MAX][MAX];
+        int row, col;
+        
+        printf("Enter the number of rows: ");
+        scanf("%d", &row);
+        printf("Enter the number of columns: ");
+        scanf("%d", &col);
+        
+        printf("Enter the elements of the matrix:\n");
+        for (int i = 0; i < row; i++) 
+        {
+            for (int j = 0; j < col; j++) 
+            {
+                scanf("%lf", &matrix[i][j]);
+            }
+        }
+        
+        printf("Original Matrix:\n");
+        printMatrix(matrix, row, col);
+        
+        int rank = rankOfMatrix(matrix, row, col);
+        
+        printf("Rank of the matrix is: %d\n", rank);
+        
+        return 0;
+    }
     }
     else{
         printf("First read and then go further!\n");
@@ -163,4 +195,69 @@ void table(int n)
     printf("%d\n",t);
    }
    printf("Thank you!");
+}
+void swapRows(double matrix[MAX][MAX], int row1, int row2, int col) 
+{
+    for (int i = 0; i < col; i++) 
+    {
+        double temp = matrix[row1][i];
+        matrix[row1][i] = matrix[row2][i];
+        matrix[row2][i] = temp;
+    }
+}
+
+int rankOfMatrix(double matrix[MAX][MAX], int row, int col) 
+{
+    int rank = col;
+    
+    for (int r = 0; r < rank; r++) 
+    {
+        if (matrix[r][r] != 0) 
+        {
+            for (int c = 0; c < row; c++) 
+            {
+                if (c != r) 
+                {
+                    double mult = matrix[c][r] / matrix[r][r];
+                    for (int i = 0; i < rank; i++) 
+                    {
+                        matrix[c][i] -= mult * matrix[r][i];
+                    }
+                }
+            }
+        } else {
+            int reduce = 1;
+            for (int i = r + 1; i < row; i++) 
+            {
+                if (matrix[i][r] != 0) 
+                {
+                    swapRows(matrix, r, i, col);
+                    reduce = 0;
+                    break;
+                }
+            }
+            if (reduce) 
+            {
+                rank--;
+                for (int i = 0; i < row; i++) 
+                {
+                    matrix[i][r] = matrix[i][rank];
+                }
+            }
+            r--;
+        }
+    }
+    return rank;
+}
+
+void printMatrix(double matrix[MAX][MAX], int row, int col) 
+{
+    for (int i = 0; i < row; i++) 
+    {
+        for (int j = 0; j < col; j++) 
+        {
+            printf("%0.2lf ", matrix[i][j]);
+        }
+        printf("\n");
+    }
 }
